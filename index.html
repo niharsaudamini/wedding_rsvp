@@ -6,7 +6,7 @@
 <title>Nihar &amp; Saudamini &middot; 12 December 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#4a4238;
@@ -220,17 +220,54 @@ body.opened .invite > *{animation-play-state:running}
   translate:-50% -50%;font-size:.55rem;color:var(--gold)}
 
 .event .ev-day{font-family:'Jost',sans-serif;
-  font-size:clamp(.6rem,2vw,.7rem);letter-spacing:.34em;text-transform:uppercase;
+  font-size:clamp(.6rem,2vw,.7rem);letter-spacing:.34em;text-transform:uppercase;font-weight:500;
   color:var(--pink);margin-bottom:4px}
 .event .ev-date{font-family:'Cormorant Garamond',serif;
   font-size:clamp(1.05rem,3.4vw,1.5rem);font-weight:500;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
   color:#3f3a35;line-height:1.2}
-.event .ev-venue{display:inline-block;margin-top:4px;
+/* order of the day: name in serif italic, time in small spaced caps */
+.event .ev-sched{list-style:none;margin:8px 0 6px;padding:0;display:grid;gap:3px}
+.event .ev-sched li{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(.98rem,3.2vw,1.18rem);color:#5d5142;line-height:1.35}
+.event .ev-sched .t{font-family:'Jost',sans-serif;font-style:normal;
+  font-size:clamp(.56rem,1.9vw,.64rem);letter-spacing:.2em;text-transform:uppercase;
+  color:#a07a4e;white-space:nowrap}
+.event .ev-sched .t::before{content:"\00B7";margin:0 .7em 0 .55em;letter-spacing:0;color:#c1996e}
+.event .ev-venue{margin-top:4px;
   font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,3.5vw,1.32rem);
-  color:#3f3a35;text-decoration:none;
-  border-bottom:1px solid transparent;padding-bottom:1px;
-  transition:color .25s,border-color .25s}
-.event .ev-venue:hover,.event .ev-venue:focus-visible{color:var(--olive-dk);border-color:var(--olive)}
+  color:#3f3a35}
+/* explicit "view on map" cue: phones have no hover, so the link has to read
+   as a link at rest */
+.event .ev-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px}
+:is(.event,.park-body) .ev-map{display:inline-flex;align-items:center;gap:.45em;cursor:pointer;
+  font-family:'Jost',sans-serif;font-size:clamp(.56rem,1.9vw,.64rem);letter-spacing:.24em;
+  text-transform:uppercase;color:#a07a4e;text-decoration:none;
+  border:1px solid rgba(176,138,92,.55);border-radius:999px;
+  padding:.45em 1.1em .45em .95em;background:rgba(255,252,246,.55);
+  transition:background .25s,color .25s,border-color .25s}
+:is(.event,.park-body) .ev-map svg{width:1.15em;height:1.15em;flex:none}
+:is(.event,.park-body) .ev-map:hover,:is(.event,.park-body) .ev-map:focus-visible{background:#a07a4e;color:#fff;border-color:#a07a4e}
+:is(.event,.park-body) .ev-map:focus-visible{outline:2px solid #a07a4e;outline-offset:3px}
+/* the parking pill is a <button>; its "P" sits in a filled gold disc that
+   inverts on hover */
+.event .ev-park .pbadge{display:inline-grid;place-items:center;width:1.45em;height:1.45em;flex:none;
+  border-radius:50%;background:#a07a4e;color:#fff;font-weight:500;letter-spacing:0;font-size:.95em;
+  transition:background .25s,color .25s}
+.event .ev-park:hover .pbadge,.event .ev-park:focus-visible .pbadge{background:#fff;color:#a07a4e}
+@media (max-width:440px){
+  .event .ev-links{gap:6px}
+  :is(.event,.park-body) .ev-map{letter-spacing:.16em;padding:.45em .9em .45em .75em}
+}
+
+/* ---------- parking popup (reuses the rsvp overlay and card) ---------- */
+.park-card{width:min(380px,100%);padding:36px 30px 30px;text-align:center}
+.park-card .rsvp-title{font-size:1.35rem;margin-bottom:6px}
+.park-venue{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.12rem;color:#6d6552;margin-bottom:14px}
+.park-body{font-family:'Cormorant Garamond',serif;font-size:1.08rem;line-height:1.55;color:#57503f}
+.park-body p + p{margin-top:10px}
+.park-addr{display:block;margin-top:4px;font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.08em;color:#6f665b}
+.park-body .ev-map{margin-top:16px}
+.park-body [hidden]{display:none}
 .event .ev-addr{margin-top:5px;margin-inline:auto;white-space:nowrap;font-size:clamp(.6rem,2.1vw,.7rem);
   letter-spacing:.07em;color:#6f665b;line-height:1.6}
 
@@ -280,17 +317,25 @@ body.opened .invite > *{animation-play-state:running}
 /* ---------- rsvp button ---------- */
 .rsvp-btn{
   margin-top:clamp(18px,3.2vw,28px);
+  position:relative;display:inline-flex;align-items:center;gap:1em;
   font-family:'Jost',sans-serif;
-  font-size:clamp(.66rem,2.2vw,.8rem);letter-spacing:.3em;text-transform:uppercase;
-  color:#3f3a35;
-  background:transparent;
-  border:1px solid #3f3a35;
-  padding:clamp(13px,3vw,16px) clamp(34px,6vw,44px) clamp(13px,3vw,16px) clamp(38px,6.5vw,50px);
+  font-size:clamp(.66rem,2.2vw,.8rem);letter-spacing:.34em;text-transform:uppercase;
+  color:#9a7448;
+  background:linear-gradient(180deg,rgba(255,253,248,.92),rgba(250,240,226,.85));
+  border:1px solid rgba(176,138,92,.75);border-radius:999px;
+  box-shadow:0 6px 18px -8px rgba(122,88,52,.35);
+  padding:clamp(13px,3vw,16px) clamp(30px,5.5vw,42px) clamp(13px,3vw,16px) clamp(30px,5.5vw,42px);
   cursor:pointer;
-  transition:background .35s,color .35s;
+  transition:background .3s,color .3s,box-shadow .3s,transform .3s;
 }
-.rsvp-btn:hover{background:#3f3a35;color:#fff}
-.rsvp-btn:focus-visible{outline:2px solid #3f3a35;outline-offset:4px}
+.rsvp-btn::before,.rsvp-btn::after{content:"";width:.42em;height:.42em;flex:none;
+  background:currentColor;opacity:.7;transform:rotate(45deg)}
+.rsvp-btn::after{margin-left:-.34em} /* offset the trailing letter-spacing so text stays centred */
+.rsvp-btn:hover,.rsvp-btn:focus-visible{
+  background:linear-gradient(180deg,#b38a5c,#9a7448);color:#fff;
+  border-color:#9a7448;box-shadow:0 10px 22px -10px rgba(122,88,52,.55);
+  transform:translateY(-1px)}
+.rsvp-btn:focus-visible{outline:2px solid #a07a4e;outline-offset:4px}
 
 /* ---------- rsvp panel ---------- */
 .rsvp{
@@ -422,21 +467,55 @@ body.opened .invite > *{animation-play-state:running}
       <div class="event">
         <p class="ev-day">Friday</p>
         <p class="ev-date">11 December 2026</p>
-        <a class="ev-venue" href="https://www.google.com/maps/search/?api=1&amp;query=Sri%20Venkata%20Krishna%20Kshetra%20Temple%2C%20615%20S%20Beck%20Ave%2C%20Tempe%2C%20AZ%2085281"
-           target="_blank" rel="noopener noreferrer">Sri Venkata Krishna Kshetra Temple</a>
+        <ul class="ev-sched">
+          <li>Ganesha Homa Puja<span class="t">9&nbsp;AM onwards</span></li>
+          <li>Wedding Officiating<span class="t">10:30&nbsp;AM onwards</span></li>
+          <li>Lunch at the Temple<span class="t">to follow</span></li>
+        </ul>
+        <p class="ev-venue">Sri Venkata Krishna Kshetra Temple</p>
         <p class="ev-addr">615 S Beck Ave, Tempe,&nbsp;AZ&nbsp;85281</p>
+        <div class="ev-links">
+          <a class="ev-map" href="https://www.google.com/maps/search/?api=1&amp;query=Sri%20Venkata%20Krishna%20Kshetra%20Temple%2C%20615%20S%20Beck%20Ave%2C%20Tempe%2C%20AZ%2085281" target="_blank" rel="noopener noreferrer" aria-label="Open Sri Venkata Krishna Kshetra Temple in Google Maps"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>View on map</a>
+          <button type="button" class="ev-map ev-park" data-park="temple" aria-haspopup="dialog" aria-label="Parking information for Sri Venkata Krishna Kshetra Temple"><span class="pbadge" aria-hidden="true">P</span>Parking info</button>
+        </div>
       </div>
       <span class="sep" aria-hidden="true"></span>
       <div class="event">
         <p class="ev-day">Saturday</p>
         <p class="ev-date">12 December 2026</p>
-        <a class="ev-venue" href="https://www.google.com/maps/search/?api=1&amp;query=Mansion%20Toscania%2C%206031%20N%2052nd%20Pl%2C%20Paradise%20Valley%2C%20AZ%2085253"
-           target="_blank" rel="noopener noreferrer">Mansion Toscania</a>
+        <ul class="ev-sched">
+          <li>Wedding Reception<span class="t">12&nbsp;PM onwards</span></li>
+        </ul>
+        <p class="ev-venue">Mansion Toscania</p>
         <p class="ev-addr">6031 N 52nd&nbsp;Pl, Paradise&nbsp;Valley, AZ&nbsp;85253</p>
+        <div class="ev-links">
+          <a class="ev-map" href="https://www.google.com/maps/search/?api=1&amp;query=Mansion%20Toscania%2C%206031%20N%2052nd%20Pl%2C%20Paradise%20Valley%2C%20AZ%2085253" target="_blank" rel="noopener noreferrer" aria-label="Open Mansion Toscania in Google Maps"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>View on map</a>
+          <button type="button" class="ev-map ev-park" data-park="toscania" aria-haspopup="dialog" aria-label="Parking information for Mansion Toscania"><span class="pbadge" aria-hidden="true">P</span>Parking info</button>
+        </div>
       </div>
     </div>
     <button class="rsvp-btn" id="rsvpOpen">RSVP</button>
   </div>
+  </div>
+</div>
+
+<div class="rsvp" id="park" role="dialog" aria-modal="true" aria-labelledby="parkTitle">
+  <div class="rsvp-card park-card">
+    <button class="rsvp-close" id="parkClose" aria-label="Close parking information">&times;</button>
+    <h2 class="rsvp-title" id="parkTitle">Parking</h2>
+    <p class="park-venue" id="parkVenue"></p>
+    <div class="park-body">
+      <div data-park-info="temple" hidden>
+        <p>Parking is available at the temple itself.</p>
+      </div>
+      <div data-park-info="toscania" hidden>
+        <p>The venue has parking for about <span style="white-space:nowrap">5&ndash;6 cars</span>.</p>
+        <p>Additional parking is available near Chase Bank
+          <span class="park-addr">4401 E Camelback Rd, Phoenix, AZ&nbsp;85018</span></p>
+        <a class="ev-map" href="https://www.google.com/maps/search/?api=1&amp;query=Chase%20Bank%2C%204401%20E%20Camelback%20Rd%2C%20Phoenix%2C%20AZ%2085018"
+           target="_blank" rel="noopener noreferrer" aria-label="Open Chase Bank, 4401 E Camelback Rd in Google Maps"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>View on map</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -524,8 +603,8 @@ document.getElementById('env').addEventListener('click', () => {
    PASTE YOUR DEPLOYMENT URL BELOW (ends in /exec).
    Until you do, the form falls back to the guest's mail app.
    ============================================================ */
-const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzeMxAmKO5livC9N01kAPiG24WGP6TyksuxO8dPby9TpQ5L-E9uux7fFWRQHxAZpjOKLw/exec';
-const RSVP_EMAIL = 'niharsaudamini@gmail.com';   // used only for the mailto fallback
+const RSVP_ENDPOINT = null;   // e.g. 'https://script.google.com/macros/s/AKfycb.../exec'
+const RSVP_EMAIL = 'your-email@example.com';   // used only for the mailto fallback
 
 const rsvp      = document.getElementById('rsvp');
 const openBtn   = document.getElementById('rsvpOpen');
@@ -549,6 +628,29 @@ closeBtn.addEventListener('click', closeRsvp);
 rsvp.addEventListener('click', e => { if (e.target === rsvp) closeRsvp(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && rsvp.classList.contains('show')) closeRsvp();
+});
+
+/* parking popup: one dialog, content block chosen by the button's data-park */
+const park = document.getElementById('park');
+const parkClose = document.getElementById('parkClose');
+const PARK_VENUES = { temple:'Sri Venkata Krishna Kshetra Temple', toscania:'Mansion Toscania' };
+let parkReturn = null;
+function openPark(key){
+  parkReturn = document.activeElement;
+  document.getElementById('parkVenue').textContent = PARK_VENUES[key] || '';
+  park.querySelectorAll('[data-park-info]').forEach(el => { el.hidden = el.dataset.parkInfo !== key; });
+  park.classList.add('show');
+  parkClose.focus();
+}
+function closePark(){
+  park.classList.remove('show');
+  if (parkReturn) parkReturn.focus();
+}
+document.querySelectorAll('.ev-park').forEach(b => b.addEventListener('click', () => openPark(b.dataset.park)));
+parkClose.addEventListener('click', closePark);
+park.addEventListener('click', e => { if (e.target === park) closePark(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && park.classList.contains('show')) closePark();
 });
 
 function showThanks(name){
@@ -715,7 +817,7 @@ submitBtn.addEventListener('click', async () => {
       showThanks(name);
     } catch (err) {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit';
+      submitBtn.textContent = 'Send RSVP';
       errorEl.textContent = 'That did not send. Check your connection and try again.';
     }
   } else {
