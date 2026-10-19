@@ -603,8 +603,8 @@ document.getElementById('env').addEventListener('click', () => {
    PASTE YOUR DEPLOYMENT URL BELOW (ends in /exec).
    Until you do, the form falls back to the guest's mail app.
    ============================================================ */
+// Paste the Apps Script web-app URL (ends in /exec) between the quotes.
 const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxOk7Q1vA3MEj7BVP0XgjwCJcwNoxAv355uv0mHV3ikIwDoh6p7DEmn1LwHz4dJE0BF_g/exec';   // e.g. 'https://script.google.com/macros/s/AKfycb.../exec'
-const RSVP_EMAIL = 'your-email@example.com';   // used only for the mailto fallback
 
 const rsvp      = document.getElementById('rsvp');
 const openBtn   = document.getElementById('rsvpOpen');
@@ -800,7 +800,13 @@ submitBtn.addEventListener('click', async () => {
     return;
   }
 
-  if (RSVP_ENDPOINT) {
+  if (!RSVP_ENDPOINT) {
+    // No mail-app fallback: guests should never be bounced into Mail/Outlook.
+    console.error('RSVP_ENDPOINT is not set; paste the Apps Script /exec URL.');
+    errorEl.textContent = 'RSVPs are not open yet. Please try again a little later.';
+    return;
+  }
+  {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
     try {
@@ -820,16 +826,6 @@ submitBtn.addEventListener('click', async () => {
       submitBtn.textContent = 'Send RSVP';
       errorEl.textContent = 'That did not send. Check your connection and try again.';
     }
-  } else {
-    // Fallback: hand off to the guest's mail app.
-    const subject = encodeURIComponent(`RSVP — ${name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\n`
-      + `11 Dec (Temple): ${day11}\n12 Dec (Mansion Toscania): ${day12}\n`
-      + `Guests: ${n}\n\nMessage:\n${message || '-'}`
-    );
-    window.location.href = `mailto:${RSVP_EMAIL}?subject=${subject}&body=${body}`;
-    showThanks(name);
   }
 });
 </script>
